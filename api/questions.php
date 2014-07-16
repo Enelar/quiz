@@ -27,13 +27,13 @@ class questions extends api
     }
     return $question;
   }
-	protected function Reserve()
-	{
-		return 
-		[
-		  "design"  =>  "admin",
+  protected function Reserve()
+  {
+    return 
+    [
+      "design"  =>  "admin",
       "result"  =>  "content",
       //"reset" =>  "#admin_text"
-		];
-	}  
+    ];
+  }  
 }

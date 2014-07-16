@@ -37,14 +37,14 @@ class admin extends api
     
     return $text;
   }
-	protected function Reserve()
-	{
+  protected function Reserve()
+  {
     $text = $this->dbGetData();
-		return 
-		[
-		  "design"  =>  "admin",
+    return 
+    [
+      "design"  =>  "admin",
       "result"  =>  "content",
       "data"  =>  ["tArr" =>  $text]
-		];
-	}  
+    ];
+  }  
 } 

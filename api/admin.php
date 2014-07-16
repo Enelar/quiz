@@ -13,6 +13,7 @@ class admin extends api
     foreach($txt as $key )
     {
       $text[$key["id"]] = array();
+      //111
       $text[$key["id"]]["id"] = $key["id"];
       $text[$key["id"]]["title"] = $key["title"];
       $text[$key["id"]]["text"] = $key["data"];      

@@ -13,10 +13,10 @@ class main extends api
 
   protected function Home()
   {
-    return 
+    return
     [
-      "design" => "register",
-      "result"  =>  "content",      
+      "design" => "isLoged",
+      "data" => ["getSessionId" => LoadModule('api', 'register')->getSessionId()],
     ];
   }
 }

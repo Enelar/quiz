@@ -5,10 +5,13 @@
   <input name = "surname">
   <p>место работы:</p>
   <input name = "work">
-  <p><input type = "submit"></p>
+  <p><button></p>//TODO
 </form>
 
 <%this.Defer(function()
 {
-  this.first().ajaxForm();
+  this.first().ajaxForm(function()
+  {
+    phoxy.MenuCall('text/show');
+  });
 })%>

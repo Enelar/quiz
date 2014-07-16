@@ -4,8 +4,8 @@ class main extends api
 {
   protected function Reserve()
   {
-  return 
-  [
+    return 
+    [
       "design" => "body",
       "script"  =>  "jquery.form"
     ];

@@ -1,0 +1,23 @@
+
+<p><%= this.question %></p>  
+<form action = "api/answ/check" method = "post">
+<%
+
+  for (var i in this.answers)
+  {
+    if (this.isMulti == "t")
+      var isMulti = "checkbox";
+    else
+      var isMulti = "radio";
+    %>
+        
+    <input type = "<%= isMulti %>" name = "<%= this.id %>"><nobr><%= this.answers[i] %> </nobr>  
+    <%
+  }
+%>
+<input type = "submit">
+</form>
+<% this.Defer(function()
+{
+  this.first().next().ajaxForm(function(data){debugger;});  
+})%>

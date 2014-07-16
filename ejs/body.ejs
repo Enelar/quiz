@@ -1,0 +1,36 @@
+﻿<div id = "cap" class = "cap">
+	<h1>Опрос:</h1>
+</div>
+<div id = "content" class = "content">
+</div>
+<div id = "footer" class = "footer">
+<nobr>2014</nobr>
+</div>
+
+<script>
+phoxy.Defer(function()
+{
+  var old_f = $.fn.ajaxForm;
+
+  if (typeof(old_f) == 'undefined')
+    return phoxy.Defer(arguments.callee, 50);
+  $.fn.ajaxForm = function(options)
+  {
+    if (typeof options == 'function')
+      options = { success : options };
+    options = options || {};
+    var origin_cb = options.success;
+
+    options.success = function(response)
+    {
+      var obj = $.parseJSON(response);
+      phoxy.ApiAnswer(obj);
+
+      if (typeof(origin_cb) == 'function')
+        origin_cb.apply(this, arguments);
+    };
+
+    return old_f.call(this, options);
+  };
+});
+</script>

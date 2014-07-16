@@ -1,0 +1,22 @@
+<%
+for (var k in this.tArr)
+{
+  var v = this.tArr[k];
+  debugger
+  %>
+  <p><%= v.title %></p>
+  <form action = "">
+    <textarea><%= v.text %></textarea>
+    <br>  
+    <input type = "checkbox"> <nobr>Muilti</nobr>
+    <br>
+    <input type = "submit" value = "submit_text">
+    <button>add question</button>
+    <br>  
+<%=
+    this.DeferRender('a_text', v)
+%>
+    </form>
+  <%
+}
+ %>

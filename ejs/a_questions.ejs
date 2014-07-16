@@ -1,0 +1,17 @@
+  <input value = "<%= this.question %>">
+<%
+for (var k in this.aArr)
+{
+  var v = this.aArr[k];
+  debugger
+  %>
+  <%=
+  this.DeferRender('a_answers', v)
+  %>
+  <%
+}
+%>
+  <input type = "submit">
+  <input type = "submit" value = "delete">
+</form>
+<br>

@@ -1,0 +1,14 @@
+<form action = "api/register/log" method = "post">
+  <p>имя:</p>
+  <input name = "name">
+  <p>фамилия:</p>
+  <input name = "surname">
+  <p>место работы:</p>
+  <input name = "work">
+  <p><input type = "submit"></p>
+</form>
+
+<%this.Defer(function()
+{
+  this.first().ajaxForm();
+})%>

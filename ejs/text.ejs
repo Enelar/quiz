@@ -1,5 +1,12 @@
-
 <p><%= this.txt  %></p>
-<form action = "#questions/" method = "post">
-  <p><input type = "submit"></p>
-</form>
+<button>Text shown</button>
+
+<%
+this.Defer(function()
+{
+  this.first().next().click(function()
+  {
+    phoxy.MenuCall('#questions');
+  });
+})
+%>

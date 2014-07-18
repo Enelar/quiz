@@ -2,23 +2,17 @@
 
 <form action = "api/questions/saveAnswer" method = "post">
 <%
-
+var isMulti = "radio";
+if (this.q.isMulti == "t")
+  isMulti = "checkbox";
+var name = this.q.id + "[]";
   for (var i in this.a)
   {
-    if (this.q.isMulti == "t")
-    {
-      var isMulti = "checkbox";
-      %>      
-      <input type = "<%= isMulti %>" name = "<%= this.a[i].id %>" value = "Yes"><nobr><%= this.a[i].data %> </nobr> 
-      <%
-    }
-    else
-    {
-      var isMulti = "radio";      
-      %>
-      <input type = "<%= isMulti %>" name = "<%= this.q.id %>" value = "<%= this.a[i].id %>"><nobr><%= this.a[i].data %> </nobr> 
-      <%
-    }
+    if (this.q.isMulti != "t")
+      name = i;
+%>      
+  <input type = "<%= isMulti %>" name = "<%= name %>" value = "<%= this.a[i].id %>"><nobr><%= this.a[i].data %> </nobr> 
+<%
   }
 %>
   <input type = "hidden" name = "qId" value = "<%= this.q.id %>">

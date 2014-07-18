@@ -13,6 +13,7 @@ class register extends api
           /*$_POST["surname"],*/ 
           $_POST["work"]
         ], true);
+    phoxy_protected_assert($res, ["error" => "DB unavailable"]);
     return $res['id'];
     //TODO unite strings
   }
@@ -44,9 +45,8 @@ class register extends api
   {    
     $quizId = $this->dbWriteUserInfo();
     $this->dbSetQuizId($quizId);   
-    
-    $this->startSession();
-    $_SESSION['quizId'] = $quizId;
+    // Не трогать, без этого не сохраняет
+    $this->dbSetQuizId($quizId);
     return 
     [
       "reset" =>  "#text/show"
@@ -55,12 +55,12 @@ class register extends api
   
   protected function Reserve()
   {
-    $quizId = $this->getSessionId();        
+    $quizId = $this->getSessionId();
+    phoxy_protected_assert(!$quizId, ["error" => "Already registered"]);       
     return 
     [      
       "design"  => "register",
       "result"  =>  "content",
-      "data"  =>  ["quizId" =>  $quizId]
     ];    
   }
 }

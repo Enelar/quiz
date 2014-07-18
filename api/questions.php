@@ -22,6 +22,7 @@ class questions extends api
     $qId = $_POST["qId"];    
     $tId = $_POST["tId"];
     
+    // ???
     if($_POST["isMulti"] == 't')
     {
       foreach(  $_POST as $aId =>  $isChecked  )
@@ -109,7 +110,7 @@ class questions extends api
   
   protected function dbGetAnswers($textId, $qId)
   {    
-    $answ = db::Query("SELECT * FROM answers WHERE \"tId\" = $1 AND \"questId\" = $2", [$textId, $qId]);    
+    $answ = db::Query("SELECT * FROM answers WHERE \"questId\" = $1", [$qId]);    
     return $answ;
   }
   
@@ -129,6 +130,7 @@ class questions extends api
   
   protected function Reserve($qId = 1)
   {    
+    // TODO: Check question id straight
     $tId = 1;//TODO    
     return 
     [

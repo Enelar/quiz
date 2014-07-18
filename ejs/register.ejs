@@ -1,4 +1,4 @@
-<form action = "api/register/log" method = "post">
+<form action = "api/register/reg" method = "post">
   <p>имя:</p>
   <input name = "name">
   <p>фамилия:</p>
@@ -10,8 +10,5 @@
 
 <%this.Defer(function()
 {
-  this.first().ajaxForm(function()
-  {
-    phoxy.MenuCall('text/show');
-  });
+  this.first().ajaxForm();
 })%>

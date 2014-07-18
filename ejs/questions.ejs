@@ -1,11 +1,3 @@
-<%
-for (var k in this.qArr)
-{
-  var v = this.qArr[k];
-  %>
-  <%=
-  this.DeferRender('quest', v)
-  %>
-  <%
-}
- %>
+<%   
+  phoxy.MenuCall('questions/dbDrawQuestion?0=' + this.textId + '&1=' + this.qId)
+%>

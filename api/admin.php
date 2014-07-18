@@ -2,7 +2,46 @@
 
 class admin extends api
 {
-   private function dbGetData()
+  private function writeText()
+  {
+    global $_POST;
+    $res = 
+      db::Query(
+        "INSERT INTO texts (data, title) values ($1, $2) returning id",
+        [
+          $_POST["text"], 
+          $_POST["title"]
+        ], true);
+    return $res['id'];
+  }
+  
+  private function writeQuestion()
+  {
+    global $_POST;
+    $res = 
+      db::Query(
+        "INSERT INTO texts (data, title) values ($1, $2) returning id",
+        [
+          $_POST["text"], 
+          $_POST["title"]
+        ], true);
+    return $res['id'];
+  }
+  
+  private function writeAnswer()
+  {
+    global $_POST;
+    $res = 
+      db::Query(
+        "INSERT INTO texts (data, title) values ($1, $2) returning id",
+        [
+          $_POST["text"], 
+          $_POST["title"]
+        ], true);
+    return $res['id'];
+  }
+  
+  private function dbGetData()
   {
     $txt = db::Query("SELECT * FROM texts");
     

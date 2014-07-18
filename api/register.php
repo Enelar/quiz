@@ -19,7 +19,7 @@ class register extends api
   
   private function dbSetQuizId($quizId)
   {
-    session_start();
+    $this->startSession();
     $_SESSION['quizId'] = $quizId;
   }
   
@@ -34,13 +34,13 @@ class register extends api
   {
     $this->startSession();
     if ( !isset($_SESSION['quizId']) )
-      return NULL;
+      return 0;
     
     $quizId = $_SESSION['quizId'];
     return $quizId;
   }
   
-  protected function log()
+  protected function reg()
   {    
     $quizId = $this->dbWriteUserInfo();
     $this->dbSetQuizId($quizId);   
@@ -49,12 +49,13 @@ class register extends api
     $_SESSION['quizId'] = $quizId;
     return 
     [
+      "reset" =>  "#text/show"
     ];
   }
   
   protected function Reserve()
   {
-    $quizId = $this->getSessionId();    
+    $quizId = $this->getSessionId();        
     return 
     [      
       "design"  => "register",

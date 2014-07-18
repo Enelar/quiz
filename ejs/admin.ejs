@@ -1,9 +1,7 @@
-<form action = "">
-  <textarea></textarea>
-  <br>  
-  <input type = "checkbox"> <nobr>Muilti</nobr>
+<form action = "api/admin/writeText">
+  <input name = "title"> <nobr>title</nobr>
   <br>
-  <button>add question</button>
+  <textarea name = "text"></textarea><nobr>text</nobr>
   <br>
   <input type = "submit" value = "submit_text">
 </form>
@@ -19,3 +17,8 @@ for (var k in this.tArr)
   <%
 }
  %>
+ 
+ <% this.Defer(function()
+{  
+  this.first().ajaxForm(function(){});  
+})%>

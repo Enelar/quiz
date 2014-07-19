@@ -13,27 +13,33 @@ class register extends api
           $POST["work"]
         ], true);
     phoxy_protected_assert($res, ["error" => "DB unavailable"]);
-    return $res['id'];    
+    return $res['id'];
   }
   
   private function dbSetQuizId($quizId)
   {
     LoadModule('api', 'main')->startSession();
+    //phoxy_protected_assert($_SESSION['quizId'], ["error" => "Already registered"]);
     $_SESSION['quizId'] = $quizId;
   }
   
-  private function getSessionId()
+  private function isRegistered()
   {
     LoadModule('api', 'main')->startSession();
-    if ( !isset($_SESSION['quizId']) )
-      return 0;
     
-    return $_SESSION['quizId'];     
-  }
+    $quizId = 0;
+    if ( isset($_SESSION['quizId']) )
+      $quizId = $_SESSION['quizId'];
       
+    return
+    [
+      "design" => "register/chainLoader",//isLoged
+      "data" => ["sessionId" => $quizId],
+    ];
+  }
   
-  protected function submitRegForm()
-  {    
+  protected function submitForm()
+  {
     global $_POST;
     $quizId = $this->dbWriteUserInfo($_POST);
     
@@ -41,10 +47,11 @@ class register extends api
     die( IncludeModule('api', 'text')->Reserve());
   }
   
-  protected function drawRegForm()
+  protected function drawForm()
   {
-    $quizId = $this->getSessionId();
-    phoxy_protected_assert(!$quizId, ["error" => "Already registered"]);       
+    LoadModule('api', 'main')->startSession();
+    global $_SESSION;
+    //phoxy_protected_assert(!$_SESSION['quizId'], ["error" => "Already registered"]);
     return 
     [      
       "design"  => "register/registerForm",
@@ -53,11 +60,7 @@ class register extends api
   }
   
   protected function Reserve()
-  {    
-    return
-    [
-    "design" => "register/isLoged",
-    "data" => ["sessionId" => $this->getSessionId()],
-    ];
+  {
+    return $this->isRegistered();
   }
 }

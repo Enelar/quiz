@@ -9,16 +9,11 @@ class main extends api
     session_start();
   }
   
-  protected function getActiveTextId()
-  {
-    return 1;//TODO
-  }
-  
   protected function Reserve()
   {
     return 
     [
-      "design" => "body",
+      "design"  =>  "body",
       "script"  =>  "jquery.form"
     ];
   }

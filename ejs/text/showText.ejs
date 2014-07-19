@@ -1,10 +1,11 @@
-<p><%= this.txt  %></p>
-<button>Go to questions</button>
+<h2><%= this.txt.title  %></h2>
+<p class="text-left"><%= this.txt.data  %></p>
+<button class="btn btn-default">Перейти к вопросам</button>
 
 <%
 this.Defer(function()
 {
-  this.first().next().click(function()
+  this.first().next().next().click(function()
   {
     phoxy.MenuCall('text/closeText');
   });

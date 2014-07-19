@@ -1,11 +1,11 @@
-<form action = "api/register/submitRegForm" method = "post">
+<form action = "api/register/submitForm" method = "post" role="form">
   <p>имя:</p>
-  <input name = "name">
+  <input name = "name" class="form-control">
   <p>фамилия:</p>
-  <input name = "surname">
+  <input name = "surname" class="form-control">
   <p>место работы:</p>
-  <input name = "work">
-  <p><button></p>//TODO
+  <input name = "work" class="form-control">
+  <button class="btn btn-default">отправить</button>
 </form>
 
 <%this.Defer(function()

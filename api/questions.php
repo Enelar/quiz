@@ -7,8 +7,36 @@ class questions extends api
     LoadModule('api', 'main')->startSession();    
     global $_POST;
     global $_SESSION;  
-    $questionId = $_POST["questionId"];    
-    $textId = LoadModule('api', 'main')->getActiveTextId();
+    $questionId = $_POST["questionId"];
+    $textId = LoadModule('api', 'text')->getActiveTextId();
+    
+    phoxy_protected_assert($_SESSION['quizId'], ["error" => "Not registered"]); 
+    $quizId = $_SESSION['quizId'];
+    
+    foreach(  $_POST['answ'] as  $answerId  )
+    {
+      $res = 
+          db::Query(
+            "INSERT INTO users_answers (t_id, q_id, a_id, quiz_id) values ($1, $2, $3, $4) returning id",
+            [
+              $textId, 
+              $questionId,
+              $answerId,
+              $quizId
+            ], true);
+      phoxy_protected_assert($res, ["error" => "DB unavailable"]);
+    }
+
+    return $this->showQuestion($questionId);
+  }
+  
+  protected function saveCheckboxAnswer()
+  {
+    LoadModule('api', 'main')->startSession();    
+    global $_POST;
+    global $_SESSION;  
+    $questionId = $_POST["questionId"];
+    $textId = LoadModule('api', 'text')->getActiveTextId();
     
     phoxy_protected_assert($_SESSION['quizId'], ["error" => "Not registered"]); 
     $quizId = $_SESSION['quizId'];
@@ -30,16 +58,32 @@ class questions extends api
               ], true);
         phoxy_protected_assert($res, ["error" => "DB unavailable"]);
       }
-    }      
+    }
 
-    return $this->Reserve($questionId);
+    return $this->showQuestion($questionId);
+  }
+  protected function showQuestion($prevQuestionId)
+  {
+    // TODO: Check question id straight
+    LoadModule('api', 'main')->startSession();    
+    phoxy_protected_assert($_SESSION['quizId'], ["error" => "Not registered"]); 
     
-    //IncludeModule('api', 'questions')->Reserve());    
-  }  
+    $q = $this->dbGetNextQuestion($prevQuestionId);
+    $a = NULL;
+    if (isset($q['id']))
+      $a = $this->dbGetAnswers($q['id']);
+    return 
+    [
+      "design"  =>  "questions/chainLoader",
+      "result"  =>  "content",
+      "data"  =>  ["question" =>  $q,
+                          "answers" =>  $a,]
+    ];
+  }
   
   private function dbGetNextQuestion($prevQuestionId)
   {
-    $textId = LoadModule('api', 'main')->getActiveTextId();
+    $textId = LoadModule('api', 'text')->getActiveTextId();
     $question = db::Query("SELECT * FROM questions WHERE \"tId\" = $1 AND \"id\" > $2 LIMIT 1", [$textId, $prevQuestionId], true);
     //phoxy_protected_assert($question, ["error" => "DB unavailable"]); //possible
     return $question;   
@@ -47,26 +91,14 @@ class questions extends api
   
   private function dbGetAnswers($questionId)
   { 
-    $textId = LoadModule('api', 'main')->getActiveTextId();
+    $textId = LoadModule('api', 'text')->getActiveTextId();
     $answers = db::Query("SELECT * FROM answers WHERE \"questId\" = $1", [$questionId]);    
     //phoxy_protected_assert($answers, ["error" => "DB unavailable"]); //possible
     return $answers;
   }
   
-  protected function Reserve($prevQuestionId = 0)
-  {    
-    // TODO: Check question id straight
-    $q = $this->dbGetNextQuestion($prevQuestionId);
-    if (isset($q['id']))
-      $a = $this->dbGetAnswers($q['id']);
-    else
-      $a = NULL;
-    return 
-    [
-      "design"  =>  "questions/isQuestExist",
-      "result"  =>  "content",
-      "data"  =>  ["question" =>  $q,
-                          "answers" =>  $a,]
-    ];
+  protected function Reserve()
+  {
+    return $this->showQuestion(0);
   }  
 }

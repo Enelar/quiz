@@ -1,23 +1,21 @@
-<p><%= this.q.data %></p>  
+<p><%= this.question.data %></p>  
 
 <form action = "api/questions/saveAnswer" method = "post">
 <%
 var isMulti = "radio";
-if (this.q.isMulti == "t")
+if (this.question.isMulti == "t")
   isMulti = "checkbox";
-var name = this.q.id + "[]";
-  for (var i in this.a)
+var name = "answ" + this.question.id;// + "[]";
+  for (var i in this.answers)
   {
-    if (this.q.isMulti != "t")
-      name = i;
+    if (this.question.isMulti == "t")
+      name = "answ" + this.answers[i].id;// = i;
 %>      
-  <input type = "<%= isMulti %>" name = "<%= name %>" value = "<%= this.a[i].id %>"><nobr><%= this.a[i].data %> </nobr> 
+  <input type = "<%= isMulti %>" name = "<%= name %>" value = "<%= this.answers[i].id %>"><nobr><%= this.answers[i].data %> </nobr> 
 <%
   }
 %>
-  <input type = "hidden" name = "qId" value = "<%= this.q.id %>">
-  <input type = "hidden" name = "tId" value = "<%= this.t %>">
-  <input type = "hidden" name = "isMulti" value = "<%= this.q.isMulti %>">
+  <input type = "hidden" name = "questionId" value = "<%= this.question.id %>">
   <input type = "submit">
 </form>
 <% this.Defer(function()

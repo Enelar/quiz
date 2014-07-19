@@ -1,120 +1,53 @@
 <?php
-//TODO REWRITE!!!
 
 class questions extends api
-{
-
-  private function startSession()
-  {
-    if (session_status() == PHP_SESSION_ACTIVE)
-      return;
-    session_start();
-  }  
-  
+{     
   protected function saveAnswer()
   {
-    $this->startSession();
+    LoadModule('api', 'register')->startSession();
     
     global $_POST;
-    if ( !isset( $_SESSION['answ'] ) )
-      $_SESSION['answ'] = array();
+    if ( !isset( $_SESSION['answers'] ) )
+      $_SESSION['answers'] = array();
       
-    $qId = $_POST["qId"];    
-    $tId = $_POST["tId"];
+    $questionId = $_POST["questionId"];    
+    $textId = LoadModule('api', 'text')->getTextId();
     
     // ???
-    if($_POST["isMulti"] == 't')
+    foreach(  $_POST as $answerId =>  $isChecked  )
     {
-      foreach(  $_POST as $aId =>  $isChecked  )
-      {
-        if (  $isChecked == "Yes" )
-          $_SESSION['answ'][$tId][$qId]["$aId"] = $aId;        
-      }      
-    }
-    else
-    {
-      $aId = $_POST["$qId"];
-      $_SESSION['answ'][$tId][$qId]["$aId"] = $aId;
-    }
-    
-    $qId = $qId + 1;
-    
+      if  ( substr($answerId, 0, 4) == 'answ')
+        $_SESSION['answers'][$textId][$questionId]["$answerId"] = $isChecked;
+    }      
+
     return 
     [
       "design"  =>  "questions",
       "result"  =>  "content",
       "data"  =>  ["textId" =>  $tId,
                           "qId" =>  $qId]
-    ];
-     /*
-    $res = 
-      db::Query(
-        "INSERT INTO users (name, occupation) values ($1, $2) returning id",
-        [
-          $_POST["name"], 
-          /*$_POST["surname"],*//*
-          $_POST["work"]
-        ], true);
-    
-    if ( !isset( $_SESSION['answ'] ) )
-      $_SESSION['answ'] = array();
-    
-    $_SESSION['answ'][$qId] = $aId;   
-    */
-  }
+    ]; 
+    return $this->Reserve($questionId);
+  }  
   
-  private function dbGetData($textId, $currQId)
-  {   
-    
-    /*
-    //$this->startSession();
-    $textId = 2;
-    $quest = db::Query("SELECT * FROM questions WHERE \"tId\" = $textId");
-    $answ = db::Query("SELECT * FROM answers WHERE \"tId\" = $textId");
-    
-    $question = array();
-    foreach($quest as $key )
-    {
-      $question[$key["id"]] = array();
-      $question[$key["id"]]["id"] = $key["id"];
-      $question[$key["id"]]["question"] = $key["data"];
-      $question[$key["id"]]["isMulti"] = $key["isMulti"];
-      $question[$key["id"]]["answers"] = array();
-    }
-    
-    foreach($answ as $key )
-    {      
-      $question[$key["questId"]]["answers"][$key['id']] = $key["data"];
-    }
-    $question["currId"] = 1;
-    return $question;
-    */
-  }
-  
-  protected function dbGetQuestion($textId, $currQId)
+  private function dbGetNextQuestion($prevQuestionId)
   {
-    $quest = db::Query("SELECT * FROM questions WHERE \"tId\" = $1 AND \"id\" = $2", [$textId, $currQId], true);
-    return $quest;
-    /*
-    $question = array();
-    foreach($quest as $key )
-    {
-      $question[$key["id"]] = array();
-      $question[$key["id"]]["id"] = $key["id"];
-      $question[$key["id"]]["question"] = $key["data"];
-      $question[$key["id"]]["isMulti"] = $key["isMulti"];
-      $question[$key["id"]]["answers"] = array();
-    }
-    */
+    $textId = LoadModule('api', 'text')->getTextId();
+    $question = db::Query("SELECT * FROM questions WHERE \"tId\" = $1 AND \"id\" > $2 LIMIT 1", [$textId, $prevQuestionId], true);
+    //phoxy_protected_assert($question, ["error" => "DB unavailable"]);
+    return $question;   
   }
   
-  protected function dbGetAnswers($textId, $qId)
-  {    
-    $answ = db::Query("SELECT * FROM answers WHERE \"questId\" = $1", [$qId]);    
-    return $answ;
+  private function dbGetAnswers($questionId)
+  { 
+    $textId = LoadModule('api', 'text')->getTextId();
+    $answers = db::Query("SELECT * FROM answers WHERE \"questId\" = $1", [$questionId]);    
+    //phoxy_protected_assert($answers, ["error" => "DB unavailable"]);
+    return $answers;
   }
   
-  protected function dbDrawQuestion($textId, $qId)
+  /*
+  protected function dbDrawQuestion($qId = 0)
   {
     $q = $this->dbGetQuestion($textId, $qId);
     $a = $this->dbGetAnswers($textId, $qId);
@@ -127,17 +60,22 @@ class questions extends api
                           "t" =>  $textId]
     ];
   }
+  */
   
-  protected function Reserve($qId = 1)
+  protected function Reserve($prevQuestionId = 0)
   {    
     // TODO: Check question id straight
-    $tId = 1;//TODO    
+    $q = $this->dbGetNextQuestion($prevQuestionId);
+    if (isset($q['id']))
+      $a = $this->dbGetAnswers($q['id']);
+    else
+      $a = NULL;
     return 
     [
-      "design"  =>  "questions",
+      "design"  =>  "isQuestExist",
       "result"  =>  "content",
-      "data"  =>  ["textId" =>  $tId,
-                          "qId" =>  $qId]
+      "data"  =>  ["question" =>  $q,
+                          "answers" =>  $a,]
     ];
   }  
 }

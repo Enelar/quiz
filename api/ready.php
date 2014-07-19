@@ -1,19 +1,13 @@
 <?php
 
 class ready extends api
-{
-  private function startSession()
-  {
-    if (session_status() == PHP_SESSION_ACTIVE)
-      return;
-    session_start();
-  }  
-  
+{    
   protected function dbWriteAnswers()
   {
-    $this->startSession();   
+    LoadModule('api', 'register')->startSession();
+    //var_dump($_SESSION['answers'][1]);
     
-    if ( !isset( $_SESSION['answ'] ) )
+    if ( !isset( $_SESSION['answers'] ) )
     {
     //TODO
       return 
@@ -29,23 +23,23 @@ class ready extends api
       [
         "error" =>  "you not logged"
       ];
-    }
-   
-    foreach(  $_SESSION['answ'] as $tId =>  $tArr  )
+    }   
+    foreach(  $_SESSION['answers'] as $textId =>  $txtArr  )
     {
-      foreach(  $tArr as $qId  =>  $aArr  )
+      foreach(  $txtArr as $questionId  =>  $answersArr  )
       { 
-        foreach(  $aArr as $aId  =>  $val  )        
+        foreach(  $answersArr as $key  =>  $answerId  )        
         {
           $res = 
             db::Query(
               "INSERT INTO users_answers (t_id, q_id, a_id, quiz_id) values ($1, $2, $3, $4) returning id",
               [
-                $tId, 
-                $qId,
-                $aId,
+                $textId, 
+                $questionId,
+                $answerId,
                 $_SESSION['quizId']
               ], true);
+          phoxy_protected_assert($res, ["error" => "DB unavailable"]);
         }        
       }
     }

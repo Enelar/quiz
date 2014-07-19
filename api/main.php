@@ -15,8 +15,7 @@ class main extends api
   {
     return
     [
-      "design" => "isLoged",
-      "data" => ["getSessionId" => LoadModule('api', 'register')->getSessionId()],
+      "reset" =>  "#register"
     ];
   }
 }

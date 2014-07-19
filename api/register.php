@@ -14,8 +14,7 @@ class register extends api
           $_POST["work"]
         ], true);
     phoxy_protected_assert($res, ["error" => "DB unavailable"]);
-    return $res['id'];
-    //TODO unite strings
+    return $res['id'];    
   }
   
   private function dbSetQuizId($quizId)
@@ -24,43 +23,50 @@ class register extends api
     $_SESSION['quizId'] = $quizId;
   }
   
-  private function startSession()
-  {
-    if (session_status() == PHP_SESSION_ACTIVE)
-      return;
-    session_start();
-  }
-  
-  protected function getSessionId()
+  private function getSessionId()
   {
     $this->startSession();
     if ( !isset($_SESSION['quizId']) )
       return 0;
     
-    $quizId = $_SESSION['quizId'];
-    return $quizId;
+    return $_SESSION['quizId'];     
   }
+  
+  protected function startSession()
+  {
+    if (session_status() == PHP_SESSION_ACTIVE)
+      return;
+    session_start();
+  }  
   
   protected function reg()
   {    
     $quizId = $this->dbWriteUserInfo();
-    $this->dbSetQuizId($quizId);   
-    // Не трогать, без этого не сохраняет
+    
     $this->dbSetQuizId($quizId);
     return 
     [
-      "reset" =>  "#text/show"
+      "reset" =>  "#text"
     ];
   }
   
-  protected function Reserve()
+  protected function form()
   {
-    $quizId = $this->getSessionId();
-    phoxy_protected_assert(!$quizId, ["error" => "Already registered"]);       
+    //$quizId = $this->getSessionId();
+    //phoxy_protected_assert(!$quizId, ["error" => "Already registered"]);       
     return 
     [      
       "design"  => "register",
       "result"  =>  "content",
-    ];    
+    ];
+  }
+  
+  protected function Reserve()
+  {    
+    return
+    [
+    "design" => "isLoged",
+    "data" => ["getSessionId" => $this->getSessionId()],
+    ];
   }
 }

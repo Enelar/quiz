@@ -1,12 +1,7 @@
 <?php
 
 class text extends api 
-{
-  protected function getTextId()
-  {
-    return 1;//TODO
-  }
-  
+{   
   private function getText()
   {
     return $txt = '123';//TODO
@@ -14,33 +9,38 @@ class text extends api
     
   protected function isTextShown()
   {
-    LoadModule('api', 'register')->startSession();
+    LoadModule('api', 'main')->startSession();
     
     if ( !isset($_SESSION['showText']) )
-      return true;
+      return false;
         
-    return false;
+    return true;
+  }
+  
+  protected function closeText()
+  {
+    LoadModule('api', 'main')->startSession();
+    $_SESSION['showText'] = true;
+    
+    die( IncludeModule('api', 'questions')->Reserve());
   }
   
   protected function showText()
-  {       
-    LoadModule('api', 'register')->startSession();
-    $_SESSION['showText'] = true;
+  {           
     $txt = $this->getText();
     return 
     [
-      "design"  =>  "text",
+      "design"  =>  "text/showText",
       "result"  =>  "content",
       "data"  =>  ["txt"  =>  $txt]
     ];
   }
   
-  
   protected function Reserve()
   {         
     return
     [
-      "design" => "isTextShown",
+      "design" => "text/isTextShown",
       "data" => ["isTextShown"  =>  $this->isTextShown()]
     ];
   }

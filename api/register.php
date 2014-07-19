@@ -2,16 +2,15 @@
 
 class register extends api
 {
-  private function dbWriteUserInfo()
-  {
-    global $_POST;
+  private function dbWriteUserInfo($POST)
+  {    
     $res = 
       db::Query(
         "INSERT INTO users (name, occupation) values ($1, $2) returning id",
         [
-          $_POST["name"], 
-          /*$_POST["surname"],*/ 
-          $_POST["work"]
+          $POST["name"], 
+          /*$_POST["surname"],*/ //TODO
+          $POST["work"]
         ], true);
     phoxy_protected_assert($res, ["error" => "DB unavailable"]);
     return $res['id'];    
@@ -19,44 +18,36 @@ class register extends api
   
   private function dbSetQuizId($quizId)
   {
-    $this->startSession();
+    LoadModule('api', 'main')->startSession();
     $_SESSION['quizId'] = $quizId;
   }
   
   private function getSessionId()
   {
-    $this->startSession();
+    LoadModule('api', 'main')->startSession();
     if ( !isset($_SESSION['quizId']) )
       return 0;
     
     return $_SESSION['quizId'];     
   }
+      
   
-  protected function startSession()
-  {
-    if (session_status() == PHP_SESSION_ACTIVE)
-      return;
-    session_start();
-  }  
-  
-  protected function reg()
+  protected function submitRegForm()
   {    
-    $quizId = $this->dbWriteUserInfo();
+    global $_POST;
+    $quizId = $this->dbWriteUserInfo($_POST);
     
     $this->dbSetQuizId($quizId);
-    return 
-    [
-      "reset" =>  "#text"
-    ];
+    die( IncludeModule('api', 'text')->Reserve());
   }
   
-  protected function form()
+  protected function drawRegForm()
   {
-    //$quizId = $this->getSessionId();
-    //phoxy_protected_assert(!$quizId, ["error" => "Already registered"]);       
+    $quizId = $this->getSessionId();
+    phoxy_protected_assert(!$quizId, ["error" => "Already registered"]);       
     return 
     [      
-      "design"  => "register",
+      "design"  => "register/registerForm",
       "result"  =>  "content",
     ];
   }
@@ -65,8 +56,8 @@ class register extends api
   {    
     return
     [
-    "design" => "isLoged",
-    "data" => ["getSessionId" => $this->getSessionId()],
+    "design" => "register/isLoged",
+    "data" => ["sessionId" => $this->getSessionId()],
     ];
   }
 }

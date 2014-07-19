@@ -2,6 +2,18 @@
 
 class main extends api
 {
+  public function startSession()
+  {
+    if (session_status() == PHP_SESSION_ACTIVE)
+      return;
+    session_start();
+  }
+  
+  protected function getActiveTextId()
+  {
+    return 1;//TODO
+  }
+  
   protected function Reserve()
   {
     return 
@@ -13,9 +25,6 @@ class main extends api
 
   protected function Home()
   {
-    return
-    [
-      "reset" =>  "#register"
-    ];
+     die( IncludeModule('api', 'register')->Reserve());
   }
 }

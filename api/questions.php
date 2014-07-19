@@ -4,63 +4,54 @@ class questions extends api
 {     
   protected function saveAnswer()
   {
-    LoadModule('api', 'register')->startSession();
-    
+    LoadModule('api', 'main')->startSession();    
     global $_POST;
-    if ( !isset( $_SESSION['answers'] ) )
-      $_SESSION['answers'] = array();
-      
+    global $_SESSION;  
     $questionId = $_POST["questionId"];    
-    $textId = LoadModule('api', 'text')->getTextId();
+    $textId = LoadModule('api', 'main')->getActiveTextId();
+    
+    phoxy_protected_assert($_SESSION['quizId'], ["error" => "Not registered"]); 
+    $quizId = $_SESSION['quizId'];
     
     // ???
-    foreach(  $_POST as $answerId =>  $isChecked  )
+    foreach(  $_POST as $answer =>  $answerId  )
     {
-      if  ( substr($answerId, 0, 4) == 'answ')
-        $_SESSION['answers'][$textId][$questionId]["$answerId"] = $isChecked;
+      if  ( substr($answer, 0, 4) == 'answ')
+      {
+        //$answerId = substr($answer, 4, 1);
+        $res = 
+            db::Query(
+              "INSERT INTO users_answers (t_id, q_id, a_id, quiz_id) values ($1, $2, $3, $4) returning id",
+              [
+                $textId, 
+                $questionId,
+                $answerId,
+                $quizId
+              ], true);
+        phoxy_protected_assert($res, ["error" => "DB unavailable"]);
+      }
     }      
 
-    return 
-    [
-      "design"  =>  "questions",
-      "result"  =>  "content",
-      "data"  =>  ["textId" =>  $tId,
-                          "qId" =>  $qId]
-    ]; 
     return $this->Reserve($questionId);
+    
+    //IncludeModule('api', 'questions')->Reserve());    
   }  
   
   private function dbGetNextQuestion($prevQuestionId)
   {
-    $textId = LoadModule('api', 'text')->getTextId();
+    $textId = LoadModule('api', 'main')->getActiveTextId();
     $question = db::Query("SELECT * FROM questions WHERE \"tId\" = $1 AND \"id\" > $2 LIMIT 1", [$textId, $prevQuestionId], true);
-    //phoxy_protected_assert($question, ["error" => "DB unavailable"]);
+    //phoxy_protected_assert($question, ["error" => "DB unavailable"]); //possible
     return $question;   
   }
   
   private function dbGetAnswers($questionId)
   { 
-    $textId = LoadModule('api', 'text')->getTextId();
+    $textId = LoadModule('api', 'main')->getActiveTextId();
     $answers = db::Query("SELECT * FROM answers WHERE \"questId\" = $1", [$questionId]);    
-    //phoxy_protected_assert($answers, ["error" => "DB unavailable"]);
+    //phoxy_protected_assert($answers, ["error" => "DB unavailable"]); //possible
     return $answers;
   }
-  
-  /*
-  protected function dbDrawQuestion($qId = 0)
-  {
-    $q = $this->dbGetQuestion($textId, $qId);
-    $a = $this->dbGetAnswers($textId, $qId);
-    return 
-    [
-      "design"  =>  "isQuestExist",
-      "result"  =>  "content",
-      "data"  =>  ["q" =>  $q,
-                          "a" =>  $a,
-                          "t" =>  $textId]
-    ];
-  }
-  */
   
   protected function Reserve($prevQuestionId = 0)
   {    
@@ -72,7 +63,7 @@ class questions extends api
       $a = NULL;
     return 
     [
-      "design"  =>  "isQuestExist",
+      "design"  =>  "questions/isQuestExist",
       "result"  =>  "content",
       "data"  =>  ["question" =>  $q,
                           "answers" =>  $a,]
